@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('description');
             $table->date('date_of_birth');
             $table->string('nationality');
-            $table->string('role');
             $table->enum('role', ['ADMIN', 'DEFAULT'])->default('DEFAULT');
             $table->rememberToken();
             $table->timestamps();
