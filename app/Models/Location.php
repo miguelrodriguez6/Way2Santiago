@@ -15,15 +15,9 @@ class Location extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'first_name',
-        'last_name',
-        'description',
-        'date_of_birth',
-        'nationality',
-        'role',
+        'name',
+        'latitude',
+        'longitude',
     ];
 
     /**
@@ -32,8 +26,5 @@ class Location extends Model
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
-        'role',
     ];
 }
