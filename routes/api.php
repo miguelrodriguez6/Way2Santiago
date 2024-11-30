@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,4 +27,11 @@ Route::prefix('users')->group(function() {
     Route::put('{id}', [UserController::class, 'update']); // PUT /api/users/{id}
     Route::delete('{id}', [UserController::class, 'destroy']); // DELETE /api/users/{id}
 });
+
+Route::get('/locations', [LocationController::class, 'index']);
+Route::post('/locations', [LocationController::class, 'store']);
+Route::get('/locations/{id}', [LocationController::class, 'show']);
+Route::put('/locations/{id}', [LocationController::class, 'update']);
+Route::delete('/locations/{id}', [LocationController::class, 'destroy']);
+
 
