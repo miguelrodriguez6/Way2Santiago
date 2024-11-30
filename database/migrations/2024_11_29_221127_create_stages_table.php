@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->dateTimeTz('description');
-            $table->dateTimeTz('description');
+            $table->dateTimeTz('start_datetime');
+            $table->dateTimeTz('end_datetime');
             $table->decimal('distance', total: 8, places: 2);
             $table->enum('status', ['COMPLETED', 'PLANNED', 'AWAITING'])->default('COMPLETED');
             $table->foreignId('user_id_creator')->constrained('users');
