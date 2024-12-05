@@ -20,8 +20,8 @@ class Stage extends Model
     protected $fillable = [
         'name',
         'description',
-        'start_date_time',
-        'end_date_time',
+        'start_datetime',
+        'end_datetime',
         'distance',
         'status',
         'user_id_creator',
@@ -39,18 +39,18 @@ class Stage extends Model
         return $this->hasMany(StageParticipants::class);
     }
 
-    public function user(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function startLocation(): HasOne
+    public function startLocation(): belongsTo
     {
-        return $this->hasOne(Location::class);
+        return $this->belongsTo(Location::class);
     }
 
-    public function endLocation(): HasOne
+    public function endLocation(): belongsTo
     {
-        return $this->hasOne(Location::class);
+        return $this->belongsTo(Location::class);
     }
 }
