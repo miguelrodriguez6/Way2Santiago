@@ -35,6 +35,7 @@ Route::group([
     Route::get('{id}', [UserController::class, 'show']); // GET /api/users/{id}
     Route::put('{id}', [UserController::class, 'update']); // PUT /api/users/{id}
     Route::delete('{id}', [UserController::class, 'destroy']); // DELETE /api/users/{id}
+    Route::post('/register', [UserController::class, 'register']); // POST /api/users/register
 });
 
 Route::group([

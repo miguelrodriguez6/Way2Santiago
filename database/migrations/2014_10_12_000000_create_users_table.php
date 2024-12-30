@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('password');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('description');
-            $table->date('date_of_birth');
-            $table->string('nationality');
+            $table->string('description')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->string('nationality')->nullable();
             $table->enum('role', ['ADMIN', 'DEFAULT'])->default('DEFAULT');
             $table->rememberToken();
             $table->timestamps();

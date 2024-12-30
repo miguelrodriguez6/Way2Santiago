@@ -53,7 +53,10 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        $cookie = cookie('jwt', '', -1, null, null, true, true, false, 'Strict');
+
+        return response()->json(['message' => 'Successfully logged out'])
+            ->cookie($cookie);
     }
 
     /**
