@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Stage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class StageController extends Controller
 {
@@ -22,6 +23,7 @@ class StageController extends Controller
     // store - Crear una nueva etapa
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
+        Log::info('Datos recibidos en store:', $request->all());
         // Validar los datos de entrada
         $validatedData = $request->validate([
             'name' => 'required|max:255',

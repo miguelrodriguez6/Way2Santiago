@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\AccommodationController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\StageCommentsController;
 use App\Http\Controllers\Api\StageController;
 use App\Http\Controllers\Api\StageParticipantsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +49,7 @@ Route::group([
     Route::get('{id}', [LocationController::class, 'show']); // GET /api/locations/{id}
     Route::put('{id}', [LocationController::class, 'update']); // PUT /api/locations/{id}
     Route::delete('{id}', [LocationController::class, 'destroy']); // DELETE /api/locations/{id}
+    Route::post('/check-name', [LocationController::class, 'checkLocationExistsByName']);
 });
 
 Route::group([
@@ -97,10 +98,13 @@ Route::group([
 
 ], function ($router) {
 
-    Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('login', [AuthController::class, 'login']);
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+    Route::get('me', [AuthController::class, 'me']);
     Route::get('verify', [AuthController::class, 'verify']);
 });
+
+Route::apiResource('accommodations', AccommodationController::class)
+    ->only(['index', 'store', 'update', 'destroy']);
 

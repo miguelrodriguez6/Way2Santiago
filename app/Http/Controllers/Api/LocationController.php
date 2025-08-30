@@ -23,9 +23,19 @@ class LocationController extends Controller
         // Validar los datos de entrada
         $validatedData = $request->validate([
             'name' => 'required|max:255',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
+
+        $existingLocation = Location::where('name', $validatedData['name'])->first();
+
+        if ($existingLocation) {
+            // Retornar respuesta indicando que ya existe
+            return response()->json([
+                'message' => 'A location with this name already exists.',
+                'data' => $existingLocation
+            ], 409); // Código HTTP 409: Conflict
+        }
 
         // Crear la nueva ubicación
         $location = Location::create($validatedData);
@@ -107,4 +117,26 @@ class LocationController extends Controller
             'message' => 'Location deleted successfully.'
         ]);
     }
+
+    public function checkLocationExistsByName(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $location = Location::where('name', $validatedData['name'])->first();
+
+        if ($location) {
+            return response()->json([
+                'exists' => true,
+                'id' => $location->id,
+            ]);
+        }
+
+        return response()->json([
+            'exists' => false,
+            'id' => null,
+        ]);
+    }
+
 }

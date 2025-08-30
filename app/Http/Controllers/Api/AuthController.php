@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'verify']]);
+        $this->middleware('auth:api', ['except' => ['login', 'verify', 'logout']]);
     }
 
     /**
@@ -49,15 +49,30 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        auth()->logout();
+        try {
+            Log::info('This is an info log');
 
-        $cookie = cookie('jwt', '', -1, '/', 'localhost', false, false, false, 'Lax');
+            $token = $request->cookie('jwt');
 
-        return response()->json(['message' => 'Successfully logged out'])
-            ->cookie($cookie);
+            if ($token) {
+                auth()->setToken($token)->invalidate(); // invalida el JWT
+            }
+
+            // borrar cookie
+            $cookie = cookie('jwt', '', -1, '/', 'localhost', false, false, false, 'Lax');
+
+            return response()->json(['message' => 'Successfully logged out'])
+                ->cookie($cookie);
+
+        } catch (\Exception $e) {
+            Log::error('Logout error: '.$e->getMessage());
+
+            return response()->json(['error' => 'Could not log out'], 500)->cookie($cookie);
+        }
     }
+
 
     /**
      * Refresh a token.
