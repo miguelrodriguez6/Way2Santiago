@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'verify', 'logout']]);
     }
 
     /**
@@ -49,12 +49,30 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        auth()->logout();
+        try {
+            Log::info('This is an info log');
 
-        return response()->json(['message' => 'Successfully logged out']);
+            $token = $request->cookie('jwt');
+
+            if ($token) {
+                auth()->setToken($token)->invalidate(); // invalida el JWT
+            }
+
+            // borrar cookie
+            $cookie = cookie('jwt', '', -1, '/', 'localhost', false, false, false, 'Lax');
+
+            return response()->json(['message' => 'Successfully logged out'])
+                ->cookie($cookie);
+
+        } catch (\Exception $e) {
+            Log::error('Logout error: '.$e->getMessage());
+
+            return response()->json(['error' => 'Could not log out'], 500)->cookie($cookie);
+        }
     }
+
 
     /**
      * Refresh a token.
@@ -67,6 +85,38 @@ class AuthController extends Controller
     }
 
     /**
+     * Verify if the user is authenticated.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verify(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $token = $request->cookie('jwt');
+            Log::info('Token received:', ['token' => $token]);
+
+            if (!$token) {
+                return response()->json([
+                    'isAuthenticated' => false,
+                    'message' => 'No token provided'
+                ], 401);
+            }
+
+            auth()->setToken($token)->checkOrFail();
+
+            return response()->json([
+                'isAuthenticated' => true,
+                'user' => auth()->user()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'isAuthenticated' => false,
+                'message' => 'Invalid or expired token'
+            ], 401);
+        }
+    }
+
+    /**
      * Get the token array structure.
      *
      * @param  string $token
@@ -75,13 +125,15 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $user = auth()->user();
 
-        $cookie = cookie('jwt', $token, auth()->factory()->getTTL() * 60, null, null, true, true, false, 'Strict');
+        $cookie = cookie('jwt', $token, auth()->factory()->getTTL() * 60, '/', 'localhost', false, false, false, 'Lax');
 
         return response()->json([
             'message' => 'Login successful',
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => $user
         ])->cookie($cookie);
     }
 }

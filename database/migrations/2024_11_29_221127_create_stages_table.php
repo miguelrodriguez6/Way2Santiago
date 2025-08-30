@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('stages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
-            $table->dateTimeTz('start_datetime');
-            $table->dateTimeTz('end_datetime');
-            $table->decimal('distance', total: 8, places: 2);
+            $table->string('description')->nullable();
+            $table->dateTimeTz('start_datetime')->nullable();
+            $table->dateTimeTz('end_datetime')->nullable();
+            $table->decimal('distance', total: 8, places: 2)->nullable();
             $table->enum('status', ['COMPLETED', 'PLANNED', 'AWAITING'])->default('COMPLETED');
             $table->foreignId('user_id_creator')->constrained('users');
-            $table->foreignId('start_location_id')->constrained('locations');
-            $table->foreignId('end_location_id')->constrained('locations');
+            $table->foreignId('start_location_id')->nullable()->constrained('locations');
+            $table->foreignId('end_location_id')->nullable()->constrained('locations');
             $table->timestamps();
         });
     }

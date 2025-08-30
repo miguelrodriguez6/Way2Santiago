@@ -47,23 +47,25 @@ class UserController extends Controller
                 'password' => 'required|min:6|confirmed',
                 'first_name' => 'required|max:255',
                 'last_name' => 'required|max:255',
-                'description' => 'nullable|max:500',
-                'date_of_birth' => 'required|date',
-                'nationality' => 'required|max:255',
-                'role' => 'required|in:ADMIN,DEFAULT',
+//                'description' => 'nullable|max:500',
+//                'date_of_birth' => 'required|date',
+//                'nationality' => 'required|max:255',
+//                'role' => 'required|in:ADMIN,DEFAULT',
             ]);
 
             // Crear el usuario en la base de datos
             $user = User::create([
                 'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
-                'password' => bcrypt($validatedData['password']), // Asegurarse de cifrar la contraseña
+                'password' => bcrypt($validatedData['password']),
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
-                'description' => $validatedData['description'] ?? null,
-                'date_of_birth' => $validatedData['date_of_birth'],
-                'nationality' => $validatedData['nationality'],
-                'role' => $validatedData['role'],
+//                'description' => $validatedData['description'] ?? null,
+                'description' => null,
+                'date_of_birth' => null,
+                'nationality' => null,
+                'role' => 'DEFAULT',
+//                'role' => $validatedData['role'],
             ]);
 
             // Si la creación es exitosa, devolver una respuesta de éxito en formato JSON
@@ -134,5 +136,48 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User deleted successfully.'
         ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function register(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            // Validación de los datos entrantes
+            $validatedData = $request->validate([
+                'username' => 'required|unique:users|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|min:6|confirmed',
+                'first_name' => 'required|max:255',
+                'last_name' => 'required|max:255'
+            ]);
+
+            // Crear el usuario en la base de datos
+            $user = User::create([
+                'username' => $validatedData['username'],
+                'email' => $validatedData['email'],
+                'password' => bcrypt($validatedData['password']),
+                'first_name' => $validatedData['first_name'],
+                'last_name' => $validatedData['last_name'],
+                'description' => null,
+                'date_of_birth' => null,
+                'nationality' => null,
+                'role' => 'DEFAULT',
+            ]);
+
+            // Si la creación es exitosa, devolver una respuesta de éxito en formato JSON
+            return response()->json([
+                'message' => 'User created successfully.',
+                'data' => $user
+            ], 201); // Código 201 para indicar que se ha creado un recurso
+
+        } catch (\Exception $e) {
+            // Capturar cualquier excepción y devolver un mensaje de error
+            return response()->json([
+                'message' => 'An error occurred while creating the user.',
+                'error' => $e->getMessage()
+            ], 500); // Código 500 para error del servidor
+        }
     }
 }
